@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/investments/static/css/main.f855e6bc.css",
+    "main.js": "/investments/static/js/main.d4d6e931.js",
+    "static/js/453.2874d0f4.chunk.js": "/investments/static/js/453.2874d0f4.chunk.js",
+    "index.html": "/investments/index.html",
+    "main.f855e6bc.css.map": "/investments/static/css/main.f855e6bc.css.map",
+    "main.d4d6e931.js.map": "/investments/static/js/main.d4d6e931.js.map",
+    "453.2874d0f4.chunk.js.map": "/investments/static/js/453.2874d0f4.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f855e6bc.css",
+    "static/js/main.d4d6e931.js"
+  ]
+}
