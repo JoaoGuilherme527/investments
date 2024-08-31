@@ -34,32 +34,21 @@ function App() {
     function Item(data: Investment, index: number) {
         return (
             <tr key={data.id} style={{backgroundColor: index % 2 ? "#bdbdbd8d" : "#fff"}}>
-                <td style={{fontWeight: 500}}>
-                    {editingItem?.id === data.id ? (
-                        <input type="text" defaultValue={editingItem.name} onChange={(e) => handleChange(e, data.id, "name")} />
-                    ) : (
-                        data.name.toLocaleUpperCase()
-                    )}
-                </td>
-                <td style={{fontWeight: 500}}>
-                    {editingItem?.id === data.id ? (
-                        <input type="number" defaultValue={editingItem.qtd} onChange={(e) => handleChange(e, data.id, "qtd")} />
-                    ) : (
-                        data.qtd
-                    )}
-                </td>
-                <td style={{fontWeight: 500}}>
-                    {editingItem?.id === data.id ? (
-                        <input type="number" defaultValue={editingItem.amount} onChange={(e) => handleChange(e, data.id, "amount")} />
-                    ) : (
-                        formatToReal(data.amount)
-                    )}
-                </td>
-                <td>
+                <td style={{fontWeight: 500}}>{data.name.toLocaleUpperCase()}</td>
+                <td style={{fontWeight: 500}}>{data.qtd}</td>
+                <td style={{fontWeight: 500}}>{formatToReal(data.amount)}</td>
+                <td style={{width: "300px"}}>
                     {editingItem?.id === data.id ? (
                         <div style={{display: "flex", justifyContent: "space-evenly", gap: "10px"}}>
-                            <button style={{width:"40%", fontSize: "16px"}} onClick={handleCancel}>Save</button>
-                            <button style={{width:"40%", fontSize: "16px"}} onClick={() => DeleteItem(data.id)}>Delete</button>
+                            <button style={{width: "40%", fontSize: "16px"}} onClick={handleCancel}>
+                                Cancel
+                            </button>
+                            <button
+                                style={{width: "40%", fontSize: "16px", background: "red", color: "white"}}
+                                onClick={() => DeleteItem(data.id)}
+                            >
+                                Delete
+                            </button>
                         </div>
                     ) : (
                         <button onClick={() => handleEdit(data)}>Edit</button>
@@ -67,15 +56,6 @@ function App() {
                 </td>
             </tr>
         )
-    }
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>, id: string, field: keyof Investment) => {
-        const updatedArray = investmentsArray.map((item) =>
-            item.id === id ? {...item, [field]: field === "amount" ? Number(e.target.value) : e.target.value} : item
-        )
-        setInvestmentsArray(updatedArray)
-        localStorage.setItem("investments", JSON.stringify(updatedArray))
-        RenderCardsValues()
     }
 
     const handleEdit = (item: Investment) => {
@@ -112,10 +92,11 @@ function App() {
     function AddItem() {
         let data: Investment = {
             id: generateUniqueId(),
-            name: symbol.current?.value as string,
+            name: symbol.current?.value.toUpperCase() as string,
             qtd: Number(quantity.current?.value),
             amount: Number(cost.current?.value),
         }
+
         if (symbol.current && quantity.current && cost.current) {
             symbol.current.value = ""
             quantity.current.value = ""
@@ -124,9 +105,22 @@ function App() {
 
         let itens = GetItens()
         if (itens) {
-            itens.push(data)
-            localStorage.setItem("investments", JSON.stringify(itens))
-            setInvestmentsArray(itens)
+            let filterItens = itens.filter((item) => item.name === data.name)
+            if (filterItens.length > 0) {
+                let filteredItem = filterItens[0]
+                let item: Investment = {
+                    id: filteredItem.id,
+                    name: filteredItem.name,
+                    amount: filteredItem.amount + data.amount,
+                    qtd: filteredItem.qtd + data.qtd,
+                }
+                let itensWithoutItem = itens.filter((_item) => _item.id !== filteredItem.id)
+                itensWithoutItem.push(item)
+                localStorage.setItem("investments", JSON.stringify(itensWithoutItem))
+                setInvestmentsArray(itensWithoutItem)
+            } else {
+                itens.push(data)
+            }
         } else {
             let saveItem = JSON.stringify([data])
             localStorage.setItem("investments", saveItem)
