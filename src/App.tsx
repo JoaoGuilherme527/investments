@@ -13,7 +13,7 @@ function App() {
     const [totalCost, setTotalCost] = useState(0)
     const [totalActives, setTotalActives] = useState(0)
 
-    const [editingItem, setEditingItem] = useState<Investment | null>(null)
+    const [editingItem, setEditingItem] = useState<string | null>(null)
 
     const [investmentsArray, setInvestmentsArray] = useState<Investment[]>([])
     //     [
@@ -38,28 +38,27 @@ function App() {
                 <td style={{fontWeight: 500}}>{data.qtd}</td>
                 <td style={{fontWeight: 500}}>{formatToReal(data.amount)}</td>
                 <td style={{width: "300px"}}>
-                    {editingItem?.id === data.id ? (
+                    {editingItem === data.id ? (
                         <div style={{display: "flex", justifyContent: "space-evenly", gap: "10px"}}>
-                            <button style={{width: "40%", fontSize: "16px"}} onClick={handleCancel}>
+                            <button  onClick={handleCancel}>
                                 Cancel
                             </button>
                             <button
-                                style={{width: "40%", fontSize: "16px", background: "red", color: "white"}}
                                 onClick={() => DeleteItem(data.id)}
                             >
                                 Delete
                             </button>
                         </div>
                     ) : (
-                        <button onClick={() => handleEdit(data)}>Edit</button>
+                        <button onClick={() => handleEdit(data.id)}>Edit</button>
                     )}
                 </td>
             </tr>
         )
     }
 
-    const handleEdit = (item: Investment) => {
-        setEditingItem(item)
+    const handleEdit = (id: string) => {
+        setEditingItem(id)
     }
 
     const handleCancel = () => {
@@ -87,6 +86,7 @@ function App() {
             localStorage.setItem("investments", JSON.stringify(filteredItens))
             setInvestmentsArray(filteredItens)
         }
+        RenderCardsValues()
     }
 
     function AddItem() {
@@ -120,12 +120,15 @@ function App() {
                 setInvestmentsArray(itensWithoutItem)
             } else {
                 itens.push(data)
+                localStorage.setItem("investments", JSON.stringify(itens))
+                setInvestmentsArray(itens)
             }
         } else {
             let saveItem = JSON.stringify([data])
             localStorage.setItem("investments", saveItem)
             setInvestmentsArray([data])
         }
+        RenderCardsValues()
     }
 
     function UpdateItem(data: Investment) {
@@ -152,14 +155,14 @@ function App() {
 
     useLayoutEffect(() => {
         GetItens()
+        RenderCardsValues()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
-        RenderCardsValues()
         ReloadItens()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [investmentsArray])
+    }, [investmentsArray, editingItem])
 
     return (
         <div className="App">
@@ -168,6 +171,7 @@ function App() {
                     <div className="card">
                         <h4>Total Aplicado</h4>
                         <h1>{formatToReal(totalCost)}</h1>
+                        {/* <h1>R$ 3.390,36</h1> */}
                     </div>
                     <div className="card">
                         <h4>Ativos</h4>
@@ -185,8 +189,8 @@ function App() {
                         <thead>
                             <tr>
                                 <th>Ativos</th>
-                                <th>Quantidade</th>
-                                <th>Valor Aplicado</th>
+                                <th>Qtd</th>
+                                <th>Aplicado</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
