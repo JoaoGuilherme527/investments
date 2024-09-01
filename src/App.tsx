@@ -37,7 +37,7 @@ function App() {
                 <td style={{fontWeight: 500}}>{data.name.toLocaleUpperCase()}</td>
                 <td style={{fontWeight: 500}}>{data.qtd}</td>
                 <td style={{fontWeight: 500}}>{formatToReal(data.amount)}</td>
-                <td style={{width: "300px"}}>
+                <td style={{width: "150px"}}>
                     {editingItem === data.id ? (
                         <div style={{display: "flex", justifyContent: "space-evenly", gap: "10px"}}>
                             <button  onClick={handleCancel}>
