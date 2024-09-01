@@ -131,14 +131,6 @@ function App() {
         RenderCardsValues()
     }
 
-    function UpdateItem(data: Investment) {
-        let itens = GetItens()
-        if (itens) {
-            let index = itens.findIndex((item) => item.id === data.id)
-            itens[index] = data
-        }
-    }
-
     function ReloadItens() {
         setRenderList(RenderItens(investmentsArray))
     }
