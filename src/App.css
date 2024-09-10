@@ -3,7 +3,7 @@
 }
 
 .App-header {
-    background-color: #fff;
+    background-color: #444;
     height: 100vh;
     width: 100vw;
     display: flex;
@@ -24,10 +24,10 @@
 }
 
 .card {
-    background-color: #fff;
+    background-color: #444;
     box-shadow: 3px 4px 5px 4px #0001;
     border-radius: 10px;
-    color: #333;
+    color: #ccc;
     display: grid;
     padding: 10px;
     flex: 1;
@@ -47,7 +47,7 @@
 
 .addInput {
     /* flex: 1; */
-    border: 1px solid #ccc;
+    border: 1px solid #333;
     border-radius: 10px;
     padding: 10px;
     display: flex;
@@ -58,19 +58,20 @@
 
 .addInput input {
     outline: none;
-    color: #444;
+    color: #eee;
     border: none;
     font-weight: 600;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #333;
     text-align: center;
     text-transform: uppercase;
     flex: 2;
     padding-block: 12px;
+    background-color: #3338;
 }
 
 .table {
     flex: 3;
-    outline: 1px solid #ccc;
+    outline: 1px solid #333;
     border-radius: 10px;
     overflow: hidden;
     width: 100%;
@@ -98,32 +99,21 @@ table {
 }
 
 tr > th {
-    background-color: #bdbdbdc3;
-    color: #444;
+    background-color: #505050c3;
+    color: #eee;
     font-weight: 500;
-    border-bottom: 1px solid #ccc;
+    border-bottom: 1px solid #333;
 }
 
 th,
 td {
     padding: 4px;
     padding-inline: 6px;
-    color: #444;
+    color: #eee;
 }
 
 tr {
-    border-bottom: 1px solid #ccc;
-}
-
-td > input {
-    background-color: transparent;
-    border: none;
-    border-bottom: 1px solid #ccc;
-    text-align: center;
-    font-weight: 600;
-    color: #444;
-    padding-inline: 5px;
-    font-family: "Poppins", sans-serif;
+    border-bottom: 1px solid #333;
 }
 
 td > button,
@@ -146,17 +136,17 @@ td > div > button {
     }
     .cards {
         border-radius: 10px;
-        border: 1px solid #ccc;
+        border: 1px solid #333;
         width: 60%;
         padding: 20px;
         column-gap: 20px;
     }
     .card {
-        background-color: #fff;
+        background-color: #444;
         box-shadow: 3px 4px 5px 4px #0001;
         width: 50%;
         border-radius: 10px;
-        color: #333;
+        color: #eee;
         display: grid;
         position: relative;
         padding: 10px;
@@ -171,7 +161,7 @@ td > div > button {
 
     .addInput {
         width: 60%;
-        border: 1px solid #ccc;
+        border: 1px solid #333;
         border-radius: 10px;
         display: flex;
         flex-direction: row;
@@ -181,11 +171,11 @@ td > div > button {
 
     .addInput input {
         outline: none;
-        color: #444;
+        color: #eee;
         font-size: 16px;
         border: none;
         font-weight: 600;
-        border-right: 1px solid #ccc;
+        border-right: 1px solid #444;
         text-align: center;
         text-transform: uppercase;
     }
@@ -206,7 +196,7 @@ td > div > button {
     .table {
         height: 100%;
         width: 60%;
-        outline: 1px solid #ccc;
+        outline: 1px solid #333;
         border-radius: 10px;
         overflow: hidden;
     }
