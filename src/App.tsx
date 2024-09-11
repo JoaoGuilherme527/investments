@@ -4,6 +4,10 @@ import "./App.css"
 import generateUniqueId from "./utils/generateUniqueId"
 import {Investment, FundData} from "./types/types"
 import Spinner from "react-bootstrap/Spinner"
+import Button from "react-bootstrap/Button"
+import Modal from "react-bootstrap/Modal"
+import Form from "react-bootstrap/Form"
+import Image from "react-bootstrap/Image"
 import "bootstrap/dist/css/bootstrap.min.css"
 
 function App() {
@@ -20,11 +24,22 @@ function App() {
     const [investmentsArray, setInvestmentsArray] = useState<Investment[]>([])
 
     const [renderList, setRenderList] = useState<any>()
-    const [valueApplied, setValueApplied] = useState<any>()
+    const [valueApplied, setValueApplied] = useState<number>(0)
+    const [valueAppliedTarget, setValueAppliedTarget] = useState<number>(0)
 
     const [isLoading, setIsLoading] = useState<boolean>(false)
 
     const [isError, setIsError] = useState<string | null>(null)
+
+    const [show, setShow] = useState(false)
+
+    const handleClose = () => setShow(false)
+    const handleShow = () => setShow(true)
+    const handleEditApplied = () => {
+        setShow(false)
+        localStorage.setItem("APPLIED", JSON.stringify(valueAppliedTarget))
+        setValueApplied(valueAppliedTarget)
+    }
 
     const formatToReal = (number: number) => {
         return number.toLocaleString("pt-BR", {style: "currency", currency: "BRL"})
@@ -35,7 +50,10 @@ function App() {
             <tr key={data.id} style={{backgroundColor: index % 2 ? "#3337" : "#444"}}>
                 <td style={{fontWeight: 500}}>{data.name.toLocaleUpperCase()}</td>
                 <td style={{fontWeight: 500}}>{data.qtd}</td>
-                <td style={{fontWeight: 500}}>{formatToReal(data.amount)}</td>
+                <td style={{fontWeight: 500}}>{formatToReal(data.amountApplied)}</td>
+                <td style={{fontWeight: 500, color: data.amountApplied > data.amount ? "#d44d4d" : "green"}}>
+                    {formatToReal(data.amount)}
+                </td>
                 <td className={data.movement} style={{fontWeight: 500}}>
                     {data.dividend_yeld}
                 </td>
@@ -135,54 +153,64 @@ function App() {
         RenderCardsValues()
     }
 
-    async function AddItem() {
+    async function AddItem(param: any) {
         try {
             setIsLoading(true)
-            let response = await fetch(
-                `https://finances-six-blush.vercel.app/api/v1/quote/${symbol.current?.value.toUpperCase() as string}`
-            )
-            let fund: FundData = await response.json()
 
-            let data: Investment = {
-                id: generateUniqueId(),
-                name: symbol.current?.value.toUpperCase() as string,
-                qtd: Number(quantity.current?.value),
-                dividend_yeld: fund.price_movement.price,
-                percentage: fund.price_movement.percentage,
-                amount: fund.price * Number(quantity.current?.value),
-                movement: fund.price_movement.movement ? fund.price_movement.movement : "",
-            }
-
-            if (symbol.current && quantity.current) {
-                symbol.current.value = ""
-                quantity.current.value = ""
-            }
-
-            let itens = GetItens()
-            if (itens) {
-                let filterItens = itens.filter((item) => item.name === data.name)
-                if (filterItens.length > 0) {
-                    let filteredItem = filterItens[0]
-                    let item: Investment = {
-                        ...filteredItem,
-                        amount: filteredItem.amount + data.amount,
-                        qtd: filteredItem.qtd + data.qtd,
+            fetch(`https://finances-six-blush.vercel.app/api/v1/quote/${param.fundo}`)
+                .then(async (response) => {
+                    return await response.json()
+                })
+                .then((fund: FundData) => {
+                    const getId = generateUniqueId()
+                    let getAppliedValueFromStorage: string | null | number = localStorage.getItem(param.fundo)
+                    if (!getAppliedValueFromStorage) {
+                        localStorage.setItem(param.fundo, JSON.stringify(fund.price * param.quantidade))
+                        getAppliedValueFromStorage = fund.price * param.quantidade
                     }
-                    let itensWithoutItem = itens.filter((_item) => _item.id !== filteredItem.id)
-                    itensWithoutItem.push(item)
-                    localStorage.setItem("investments", JSON.stringify(itensWithoutItem))
-                    setInvestmentsArray(itensWithoutItem)
-                } else {
-                    itens.push(data)
-                    localStorage.setItem("investments", JSON.stringify(itens))
-                    setInvestmentsArray(itens)
-                }
-            } else {
-                let saveItem = JSON.stringify([data])
-                localStorage.setItem("investments", saveItem)
-                setInvestmentsArray([data])
-            }
-            RenderCardsValues()
+
+                    let data: Investment = {
+                        id: getId,
+                        name: param.fundo,
+                        qtd: param.quantidade,
+                        dividend_yeld: fund.price_movement.price,
+                        percentage: fund.price_movement.percentage,
+                        amount: fund.price * param.quantidade,
+                        amountApplied: Number(getAppliedValueFromStorage),
+                        movement: fund.price_movement.movement ? fund.price_movement.movement : "",
+                    }
+
+                    if (symbol.current && quantity.current) {
+                        symbol.current.value = ""
+                        quantity.current.value = ""
+                    }
+
+                    let itens = GetItens()
+                    if (itens) {
+                        let filterItens = itens.filter((item) => item.name === data.name)
+                        if (filterItens.length > 0) {
+                            let filteredItem = filterItens[0]
+                            let item: Investment = {
+                                ...filteredItem,
+                                amount: filteredItem.amount + data.amount,
+                                qtd: filteredItem.qtd + data.qtd,
+                            }
+                            let itensWithoutItem = itens.filter((_item) => _item.id !== filteredItem.id)
+                            itensWithoutItem.push(item)
+                            localStorage.setItem("investments", JSON.stringify(itensWithoutItem))
+                            setInvestmentsArray(itensWithoutItem)
+                        } else {
+                            itens.push(data)
+                            localStorage.setItem("investments", JSON.stringify(itens))
+                            setInvestmentsArray(itens)
+                        }
+                    } else {
+                        let saveItem = JSON.stringify([data])
+                        localStorage.setItem("investments", saveItem)
+                        setInvestmentsArray([data])
+                    }
+                    RenderCardsValues()
+                })
         } catch (error: any) {
             setIsError(error)
         } finally {
@@ -191,8 +219,28 @@ function App() {
     }
 
     function ReloadItens() {
-        // setValueApplied
         setRenderList(RenderItens(investmentsArray))
+    }
+
+    function LoadScreen() {
+        let itens = GetItens()
+        if (itens) {
+            for (const item of itens) {
+                DeleteItem(item.id)
+                setTimeout(() => {
+                    AddItem({fundo: item.name, quantidade: item.qtd})
+                }, 500)
+            }
+        }
+    }
+
+    function GetAppliedValue() {
+        const value = localStorage.getItem("APPLIED")
+        if (value) {
+            setValueApplied(Number(value))
+        } else {
+            setValueApplied(0)
+        }
     }
 
     function RenderCardsValues() {
@@ -206,25 +254,31 @@ function App() {
     }
 
     useLayoutEffect(() => {
-        GetItens()
         RenderCardsValues()
+        LoadScreen()
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
         ReloadItens()
+        GetAppliedValue()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [investmentsArray, editingItem])
+    }, [investmentsArray, editingItem, valueApplied])
 
     return (
         <div className="App">
             <header className="App-header">
                 <div className="boxes">
-                    {/* <div className="box">
-                        <h4>Total Aplicado</h4>
-                        <h1>{valueApplied}</h1>
-                        <h1>R$ 3.390,36</h1>
-                    </div> */}
+                    <div className="box">
+                        <div style={{display: "flex", justifyContent: "space-between"}}>
+                            <h4>Total Aplicado</h4>
+                            <button onClick={handleShow}>
+                                <Image src="https://upload.wikimedia.org/wikipedia/commons/3/3e/White_pencil.png" fluid />
+                            </button>
+                        </div>
+                        <h1>{formatToReal(valueApplied)}</h1>
+                        {/* <h1>R$ 3.390,36</h1> */}
+                    </div>
                     <div className="box">
                         <h4>Investimento</h4>
                         <h1>{formatToReal(totalCost)}</h1>
@@ -238,7 +292,32 @@ function App() {
                 <div className="addInput">
                     <input type="text" placeholder="Codigo" ref={symbol} />
                     <input type="number" placeholder="Quantidade" ref={quantity} />
-                    <button onClick={AddItem}>{isLoading ? <Spinner animation="border" variant="light" size="sm" /> : "Adicionar"}</button>
+                    <button
+                        onClick={() => {
+                            setIsLoading(true)
+                            fetch(`https://finances-six-blush.vercel.app/api/v1/quote/${symbol.current?.value.toUpperCase() as string}`)
+                                .then(async (response) => {
+                                    return await response.json()
+                                })
+                                .then((fund: FundData) => {
+                                    const value = localStorage.getItem("APPLIED")
+                                    if (value) {
+                                        const newValue = Number(value) + fund.price * Number(quantity.current?.value)
+                                        localStorage.setItem("APPLIED", JSON.stringify(newValue))
+                                        setValueApplied(newValue)
+                                    } else {
+                                        localStorage.setItem("APPLIED", JSON.stringify(fund.price * Number(quantity.current?.value)))
+                                        setValueApplied(fund.price * Number(quantity.current?.value))
+                                    }
+                                    AddItem({
+                                        fundo: symbol.current?.value.toUpperCase() as string,
+                                        quantidade: Number(quantity.current?.value),
+                                    })
+                                })
+                        }}
+                    >
+                        {isLoading ? <Spinner animation="border" variant="light" size="sm" /> : "Adicionar"}
+                    </button>
                 </div>
                 <div className="tableContainer">
                     <table>
@@ -247,6 +326,7 @@ function App() {
                                 <th>Ativos</th>
                                 <th>Qtd</th>
                                 <th>Aplicado</th>
+                                <th>Investimento</th>
                                 <th>Rend. de Div</th>
                                 <th>Porcentagem</th>
                                 <th>Ações</th>
@@ -256,6 +336,35 @@ function App() {
                     </table>
                 </div>
             </header>
+            <Modal show={show} onHide={handleClose} aria-labelledby="contained-modal-title-vcenter" centered>
+                <Modal.Header closeButton style={{background: "#333", borderColor: "#222"}}>
+                    <Modal.Title style={{color: "#ccc"}}>Modal heading</Modal.Title>
+                </Modal.Header>
+                <Modal.Body style={{background: "#333"}}>
+                    <Form>
+                        <Form.Group className="mb-3" controlId="exampleForm.ControlInput1">
+                            <Form.Label style={{color: "#ccc"}}>Total Aplicado</Form.Label>
+                            <Form.Control
+                                type="number"
+                                placeholder=""
+                                autoFocus
+                                style={{color: "#ccc", background: "#333", outline: "none", borderColor: "#222"}}
+                                onChange={(text) => {
+                                    setValueAppliedTarget(Number(text.target.value))
+                                }}
+                            />
+                        </Form.Group>
+                    </Form>
+                </Modal.Body>
+                <Modal.Footer style={{background: "#333", borderColor: "#222"}}>
+                    <Button variant="secondary" onClick={handleClose}>
+                        Fechar
+                    </Button>
+                    <Button variant="primary" onClick={handleEditApplied}>
+                        Salvar
+                    </Button>
+                </Modal.Footer>
+            </Modal>
         </div>
     )
 }

@@ -3,6 +3,7 @@ export interface Investment {
     qtd: number,
     name: string,
     amount: number,
+    amountApplied: number,
     percentage: number,
     dividend_yeld: number,
     movement: "Up" | "Down" | ""

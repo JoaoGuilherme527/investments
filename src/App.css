@@ -45,6 +45,26 @@
     text-wrap: nowrap;
 }
 
+.box div button {
+    background-color: #0000ff00;
+    border: none;
+    outline: none;
+    font-weight: 600;
+    color: white;
+    padding: 1px 4px;
+    border-radius: 5px;
+    font-family: "Poppins", sans-serif;
+    cursor: pointer;
+    font-size: 12px;
+    height: 50%;
+}
+
+.box div button img{
+    height: 14px;
+    width: 14px;
+
+}
+
 .addInput {
     /* flex: 1; */
     border: 1px solid #333;
@@ -145,7 +165,6 @@ svg {
 .Down,
 .Down .u47KMb {
     color: #d44d4d;
-    
 }
 .Down svg {
     transform: rotate(-180deg);
