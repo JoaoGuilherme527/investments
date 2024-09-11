@@ -13,9 +13,9 @@
     padding: 20px;
 }
 
-.cards {
+.boxes {
     border-radius: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #333;
     display: flex;
     flex: 1;
     column-gap: 10px;
@@ -23,7 +23,7 @@
     width: 100%;
 }
 
-.card {
+.box {
     background-color: #444;
     box-shadow: 3px 4px 5px 4px #0001;
     border-radius: 10px;
@@ -33,14 +33,14 @@
     flex: 1;
 }
 
-.card h4 {
+.box h4 {
     text-align: left;
     font-weight: 500;
     text-wrap: nowrap;
     font-size: 12px;
 }
 
-.card h1 {
+.box h1 {
     font-size: clamp(1em, 1em + 1vw, 1.5em);
     text-wrap: nowrap;
 }
@@ -69,7 +69,7 @@
     background-color: #3338;
 }
 
-.table {
+.tableContainer {
     flex: 3;
     outline: 1px solid #333;
     border-radius: 10px;
@@ -113,7 +113,7 @@ td {
 }
 
 tr {
-    border-bottom: 1px solid #333;
+    border-bottom: 1px solid #222;
 }
 
 td > button,
@@ -130,18 +130,39 @@ td > div > button {
     border-radius: 5px;
 }
 
+svg {
+    vertical-align: inherit !important;
+    width: 12px;
+}
+.u47KMb {
+    display: inline-block;
+    fill: currentColor;
+}
+.Up,
+.Up .u47KMb {
+    color: green;
+}
+.Down,
+.Down .u47KMb {
+    color: #d44d4d;
+    
+}
+.Down svg {
+    transform: rotate(-180deg);
+}
+
 @media screen and (min-width: 900px) {
     .App-header {
         font-size: calc(8px + 2vmin);
     }
-    .cards {
+    .boxes {
         border-radius: 10px;
         border: 1px solid #333;
         width: 60%;
         padding: 20px;
         column-gap: 20px;
     }
-    .card {
+    .box {
         background-color: #444;
         box-shadow: 3px 4px 5px 4px #0001;
         width: 50%;
@@ -152,7 +173,7 @@ td > div > button {
         padding: 10px;
     }
 
-    .card h4 {
+    .box h4 {
         text-align: left;
         font-weight: 500;
         text-wrap: nowrap;
@@ -193,7 +214,7 @@ td > div > button {
         cursor: pointer;
     }
 
-    .table {
+    .tableContainer {
         height: 100%;
         width: 60%;
         outline: 1px solid #333;
